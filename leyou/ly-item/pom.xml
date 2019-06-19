@@ -9,16 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.leyou.common</groupId>
-    <artifactId>ly-registry</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-        </dependency>
-    </dependencies>
+    <groupId>com.leyou.service</groupId>
+    <artifactId>ly-item</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>ly-item-interface</module>
+        <module>ly-item-service</module>
+    </modules>
 
 
 </project>
