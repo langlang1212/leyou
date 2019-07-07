@@ -7,7 +7,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:10086/eureka
-zuul:
+zuul:    #文件传到网关，网关缓存，文件太大会造成压力，文件上传应该绕过网关，使用nginx配置请求rewrite
   prefix: /api # 添加路由前缀
   routes:
     item-service: /item/**
