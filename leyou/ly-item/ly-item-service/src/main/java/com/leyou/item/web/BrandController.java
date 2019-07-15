@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.ws.Response;
 import java.util.List;
 
 @RestController
@@ -58,5 +57,15 @@ public class BrandController {
     @GetMapping("/cid/{cid}")
     public ResponseEntity<List<Brand>> queryBrandByCid(@PathVariable("cid") Long cid){
         return ResponseEntity.ok(brandService.queryBrandByCid(cid));
+    }
+
+    /**
+     * 根据id查询品牌
+     * @param id
+     * @return
+     */
+    @GetMapping("{id}")
+    public ResponseEntity<Brand> queryBrandById(@PathVariable("id") Long id){
+        return ResponseEntity.ok(brandService.queryById(id));
     }
 }

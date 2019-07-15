@@ -11,6 +11,7 @@ zuul:    #文件传到网关，网关缓存，文件太大会造成压力，文�
   prefix: /api # 添加路由前缀
   routes:
     item-service: /item/**
+    search-service: /search/**
     upload-service:
       path: /upload/**
       serviceId: upload-service

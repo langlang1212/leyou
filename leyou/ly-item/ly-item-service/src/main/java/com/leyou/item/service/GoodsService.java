@@ -17,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,6 +95,7 @@ public class GoodsService {
 
         int count = spuMapper.insert(spu);
         if(count != 1){
+            System.out.println("新增spu失败");
             throw new LyException(ExceptionEnum.GOODS_SAVE_ERROR);
         }
         // 新增detail
@@ -117,6 +115,7 @@ public class GoodsService {
 
             count = skuMapper.insert(sku);
             if(count != 1){
+                System.out.println("新增sku失败");
                 throw new LyException(ExceptionEnum.GOODS_SAVE_ERROR);
             }
 
@@ -126,9 +125,55 @@ public class GoodsService {
             stock.setStock(sku.getStock());
 
             stockList.add(stock);
+
         }
 
         // 批量新增库存
-        stockMapper.insertList(stockList);
+        count = stockMapper.insertList(stockList);
+        if(count != stockList.size()){
+            System.out.println("新增stock失败");
+            throw new LyException(ExceptionEnum.GOODS_SAVE_ERROR);
+        }
+    }
+
+    public SpuDetail queryDetailById(Long id) {
+        SpuDetail spuDetail = spuDetailMapper.selectByPrimaryKey(id);
+        if(spuDetail == null){
+            throw new LyException(ExceptionEnum.GOODS_DETAIL_NOT_FOUND);
+        }
+        return spuDetail;
+    }
+
+    public List<Sku> querySkuBySpuId(Long spuId) {
+        Sku sku = new Sku();
+        sku.setSpuId(spuId);
+        List<Sku> skuList = skuMapper.select(sku);
+        if(CollectionUtils.isEmpty(skuList)){
+            throw new LyException(ExceptionEnum.GOODS_SKU_NOT_FOUND);
+        }
+        // 查询库存
+//        for (Sku s: skuList) {
+//            Stock stock = stockMapper.selectByPrimaryKey(s.getId());
+//            if(stock == null){
+//                throw new LyException(ExceptionEnum.GOODS_STOCK_NOT_FOUND);
+//            }
+//            s.setStock(stock.getStock());
+//        }
+        // 批量查询
+        List<Long> ids = skuList.stream().map(Sku::getId).collect(Collectors.toList());
+        List<Stock> stockList = stockMapper.selectByIdList(ids);
+        for(int i =0 ; i<ids.size();i++){
+            System.out.println(ids.get(i));
+        }
+
+        if(CollectionUtils.isEmpty(stockList)){
+            throw new LyException(ExceptionEnum.GOODS_STOCK_NOT_FOUND);
+        }
+
+        // 我们把stock变成一个map，key是sku的id，值是库存值
+        Map<Long, Integer> stockMap = stockList.stream().collect(Collectors.toMap(Stock::getSkuId, Stock::getStock));
+        skuList.forEach(s -> s.setStock(stockMap.get(s.getId())));
+        return skuList;
+
     }
 }
